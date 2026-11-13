@@ -37,3 +37,9 @@ Each design gets an automatically generated code such as `LAN109`. Its first col
 - `npm start` — start the production API and serve `dist/client`
 
 In production, use HTTPS and set `NODE_ENV=production` so session cookies are marked secure. Session signing keys are generated automatically for local use; restarting the server signs customers out.
+
+## Deploy to Vercel
+
+The repository includes a Vercel serverless function for `/api/*`; Vercel serves the built Vite client from `dist/client`. Import the repository into Vercel and use the default project root, build command, and output directory defined in [`vercel.json`](./vercel.json). Add `GOOGLE_APPS_SCRIPT_URL`, `GOOGLE_APPS_SCRIPT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `SESSION_SECRET` to the Vercel project’s Environment Variables for every environment you use. Set `SESSION_SECRET` to a unique random value of at least 32 characters and keep it stable between deployments so customer sessions remain valid. Redeploy after setting or changing environment variables.
+
+The API initializes the spreadsheet and seeds the admin account on its first request in each serverless instance. If the deployment still reports an API error, check the Vercel Function logs and confirm that the Apps Script deployment is accessible and its URL and secret match.

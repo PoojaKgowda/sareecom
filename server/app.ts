@@ -21,6 +21,7 @@ import {
   userToRow,
 } from "./store.js";
 import { createOrderAndDecrementStock } from "./sheets.js";
+import { initializeStore } from "./bootstrap.js";
 import type { Order, OrderItem, Product, User } from "./types.js";
 
 export const app = express();
@@ -48,6 +49,11 @@ const authLimiter = rateLimit({
 const asyncRoute = (handler: express.RequestHandler): express.RequestHandler => (request, response, next) => {
   Promise.resolve(handler(request, response, next)).catch(next);
 };
+
+app.use("/api", asyncRoute(async (_request, _response, next) => {
+  await initializeStore();
+  next();
+}));
 
 function publicUser(user: User) {
   return { email: user.email, role: user.role, name: user.name, address: user.address };
