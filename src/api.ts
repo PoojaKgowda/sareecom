@@ -14,9 +14,23 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     },
   });
   if (response.status === 204) return undefined as T;
-  const data = (await response.json()) as T & { error?: string };
-  if (!response.ok) throw new ApiError(data.error || "The request could not be completed.", response.status);
-  return data;
+  const body = await response.text();
+  let data: unknown;
+  try {
+    data = JSON.parse(body);
+  } catch {
+    throw new ApiError(
+      `The API returned a non-JSON response (HTTP ${response.status}). Check that the deployed /api route points to the API function.`,
+      response.status,
+    );
+  }
+  if (!response.ok) {
+    const message = data && typeof data === "object" && "error" in data && typeof data.error === "string"
+      ? data.error
+      : "The request could not be completed.";
+    throw new ApiError(message, response.status);
+  }
+  return data as T;
 }
 
 export const json = (method: string, body?: unknown): RequestInit => ({
