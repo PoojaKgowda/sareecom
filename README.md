@@ -35,6 +35,9 @@ Each design gets an automatically generated code such as `LAN109`. Its first col
 - `npm test` — unit tests
 - `npm run build` — type-check and create the production client bundle
 - `npm start` — start the production API and serve `dist/client`
+- `npm run reset-admin-password` — update the existing admin password hash from `ADMIN_PASSWORD` in `.env`
+
+To reset a forgotten admin password, first replace `ADMIN_PASSWORD` in `.env` with a new unique password, then run `npm run reset-admin-password`. The command updates only the matching existing admin's password hash in the `Users` sheet; it does not change customer accounts or other admin data. Keep the new password private.
 
 In production, use HTTPS and set `NODE_ENV=production` so session cookies are marked secure. Session signing keys are generated automatically for local use; restarting the server signs customers out.
 
